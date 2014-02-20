@@ -20,7 +20,6 @@ func main() {
 	/* create a context */
 	ctx := NewContext() 
 
-
 	/* test configuration */
 	host,err := ctx.NewHost("test.intranet:8080") /* notice the port */
 	if err != nil {
@@ -48,6 +47,16 @@ func main() {
 	}
 
 	be.Watch(1 * time.Second)
+
+
+	be,err = host.AddBackEnd("http://loopback:6062")
+	if err != nil {
+
+		log.Fatalf("unable to add backend - %v\n",err)
+	}
+
+	be.Watch(1 * time.Second)
+
 
 
 	/* setup http reverse handler */

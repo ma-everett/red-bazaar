@@ -28,6 +28,18 @@ func (s *Session) Set(w http.ResponseWriter) {
 	}
 }
 
+func (s *Session) String() string {
+
+	str := ""
+
+	for _,value := range s.XHeaders {
+
+		str += value + "+"
+	}
+
+	return str
+}
+
 func NewSession() *Session {
 
 	s := new(Session)

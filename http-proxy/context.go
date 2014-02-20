@@ -6,17 +6,8 @@
 package main
 
 import (
-	//"io"
-	//"log"
-	//"fmt"
-	//"strings"
-	//"time"
-	//"crypto/md5"
 	"net/http"	
-
-
 )
-
 
 type Context struct {
 	
@@ -35,57 +26,7 @@ func (ctx *Context) Handler() func(http.ResponseWriter,*http.Request) {
 			host.ServeHTTP(w,req)
 			return
 		}
-
-		/*
-		userAgent := req.Header.Get("User-Agent")
-		
 	
-		host := ""
-
-	
-		parts := strings.Split(req.Host,":")
-		if len(parts) != 2 {
-
-			host = req.Host
-		} else {
-
-			host = parts[0]
-		}
-	
-		h := md5.New()
-		io.WriteString(h, userAgent)
-		
-	
-		hash := fmt.Sprintf("%x", h.Sum(nil))[:8] + "+" + host	
-		
-		
-		if x,found := ctx.Cache.Get(hash); found {
-
-			
-			if be,ok := x.(*BackEnd); ok {
-
-			
-				if be.isOnline() {
-
-					be.ServeHTTP(w,req)
-					return
-
-				}  else {
-
-					ctx.Cache.Delete(hash) 
-				}
-			}	
-		} 
-
-		log.Printf("looking up - %s\n",req.Host)
-		
-		if h,exists := ctx.Hosts[req.Host]; exists {
-
-			h.ServeHTTP(w,req)
-			return
-		}
-                */
-
 		http.Error(w,"Service Not Found",404)
 	}
 }

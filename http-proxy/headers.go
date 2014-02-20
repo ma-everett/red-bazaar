@@ -52,7 +52,9 @@ func (r XHeaderRandom) Set(w http.ResponseWriter) string {
 
 func (r XHeaderRandom) Key() string {
 	return r.name
-}	
+}
+
+	
 
 func ParseXHeader(name,value string) (XHeader,error) {
 
@@ -71,7 +73,7 @@ func ParseXHeader(name,value string) (XHeader,error) {
 		}
 
 		return XHeaderRandom{name,options},nil
-		break
+		break	
 	default:
 
 		break

@@ -17,6 +17,8 @@ import (
 	"errors"
 	"net/http"	
 	"github.com/pmylund/go-cache"
+
+	cached "../cache"
 )
 
 var (
@@ -32,9 +34,7 @@ type Host struct {
 	
 	XHeaders []XHeader
 	
-	/* add configuration here */
-
-	/* add cache ?! */
+	/* local cache for session/configuration data */
 	*cache.Cache
 }
 
@@ -146,7 +146,17 @@ func (host *Host) ServeHTTP(w http.ResponseWriter,req *http.Request) {
 
 		/* continue the session with the last backend */
 		if session,ok := x.(*Session); ok {
-			
+
+			/* do a cache lookup of the X-headers + url */
+			lookup := session.String() + req.URL.String()
+			if content,ok,_ := cached.Get(lookup); ok {
+				
+				fmt.Fprintf(w,string(content))
+				return
+			}			
+
+			/* cache miss : */
+						
 			session.Set(w)
 			be,err := host.SelectBackEnd()
 			if err != nil {
@@ -170,6 +180,16 @@ func (host *Host) ServeHTTP(w http.ResponseWriter,req *http.Request) {
 	}
 
 	host.Cache.Set(hash,session,0)
+
+	/* do a cache lookup */
+	lookup := session.String() + req.URL.String()
+	if content,ok,_ := cached.Get(lookup); ok {
+		
+		fmt.Fprintf(w,string(content))
+		return
+	}
+
+	/* on cache miss */
 
 	be,err := host.SelectBackEnd()
 	if err != nil {
@@ -208,6 +228,7 @@ func (host *Host) AddBackEnd(url string) (*BackEnd,error) {
 	return be,nil
 }
 
+
 func NewHost(cname string) *Host {
 
 	h := new(Host)
@@ -216,6 +237,7 @@ func NewHost(cname string) *Host {
 	h.XHeaders = make([]XHeader,0)
 
 	h.Cache = cache.New(5 * time.Minute,30 * time.Second) /* TODO, add to create */
-
+	
 	return h
 }
+
